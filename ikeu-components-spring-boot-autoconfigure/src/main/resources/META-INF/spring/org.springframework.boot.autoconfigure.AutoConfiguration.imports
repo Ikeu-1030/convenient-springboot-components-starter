@@ -1,0 +1,3 @@
+com.ikeu.components.autoconfigure.web.WebAutoConfiguration
+com.ikeu.components.autoconfigure.security.SecurityAutoConfiguration
+com.ikeu.components.autoconfigure.oss.OssAutoConfiguration

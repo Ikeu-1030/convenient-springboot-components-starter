@@ -1,0 +1,43 @@
+# =============================================================================
+# ikeu-components example configuration
+# Copy relevant sections to your application.yml and customize as needed.
+# =============================================================================
+
+# ---- JWT Configuration ----
+ikeu:
+  jwt:
+    # Set to true to enable JWT auto-configuration
+    enabled: false
+    # HMAC-SHA256 secret key (at least 32 characters recommended)
+    secret: "your-256-bit-secret-key-change-me-32chars"
+    # Token expiration duration
+    expiration: 24h
+    # Algorithm: HS256 or RS256
+    algorithm: HS256
+    # RSA keys (only needed for RS256)
+    # public-key: |
+    #   -----BEGIN PUBLIC KEY-----
+    #   ...
+    #   -----END PUBLIC KEY-----
+    # private-key: |
+    #   -----BEGIN PRIVATE KEY-----
+    #   ...
+    #   -----END PRIVATE KEY-----
+    # Auto-register JwtAuthenticationFilter (default: true when jwt enabled)
+    auto-filter: true
+
+  # ---- OSS Configuration ----
+#  oss:
+#    # Set to true to enable OSS auto-configuration
+#    enabled: false
+#    # OSS type: aliyun or minio
+#    type: aliyun
+#    # OSS endpoint
+#    endpoint: "https://oss-cn-hangzhou.aliyuncs.com"
+#    # Credentials
+#    access-key: "your-access-key"
+#    secret-key: "your-secret-key"
+#    # Default bucket
+#    bucket: "your-bucket"
+#    # CDN domain (optional, used for getPublicUrl)
+#    cdn-domain: "cdn.example.com"
