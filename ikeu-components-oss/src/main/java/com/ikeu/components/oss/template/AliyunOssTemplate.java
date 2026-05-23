@@ -3,7 +3,9 @@ package com.ikeu.components.oss.template;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.model.DeleteObjectsRequest;
+import com.aliyun.oss.model.ObjectMetadata;
 import com.aliyun.oss.model.OSSObject;
+import com.aliyun.oss.model.PutObjectRequest;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.InputStream;
@@ -11,7 +13,6 @@ import java.net.URL;
 import java.time.Duration;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Alibaba Cloud OSS implementation of {@link OssTemplate}.
@@ -34,7 +35,13 @@ public class AliyunOssTemplate implements OssTemplate {
 
     @Override
     public void upload(String bucket, String objectName, InputStream inputStream, String contentType) {
-        ossClient.putObject(bucket, objectName, inputStream);
+        PutObjectRequest request = new PutObjectRequest(bucket, objectName, inputStream);
+        if (contentType != null && !contentType.isBlank()) {
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentType(contentType);
+            request.setMetadata(metadata);
+        }
+        ossClient.putObject(request);
     }
 
     @Override

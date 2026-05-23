@@ -25,6 +25,17 @@ ikeu:
     #   -----END PRIVATE KEY-----
     # Auto-register JwtAuthenticationFilter (default: true when jwt enabled)
     auto-filter: true
+    # HTTP header name for token extraction (default: Authorization)
+    header-name: "Authorization"
+    # Token prefix before the actual token (default: "Bearer ")
+    token-prefix: "Bearer "
+    # Ant-style path patterns excluded from JWT validation
+    exclude-paths:
+      - /public/**
+      - /actuator/health
+      - /api/v1/auth/login
+    # Return 401 when token is missing/invalid (default: false, delegates to app)
+    fail-on-invalid: false
 
   # ---- OSS Configuration ----
 #  oss:

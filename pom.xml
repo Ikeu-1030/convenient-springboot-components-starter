@@ -13,7 +13,7 @@
 
     <groupId>com.ikeu.components</groupId>
     <artifactId>ikeu-components-parent</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>pom</packaging>
     <name>ikeu-components-parent</name>
     <description>Spring Boot convenience toolkit parent POM</description>

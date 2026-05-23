@@ -11,7 +11,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class OssProperties {
 
     /** OSS type: aliyun or minio. */
-    private String type = "aliyun";
+    private String type;
 
     /** OSS endpoint URL. */
     private String endpoint;
