@@ -7,9 +7,38 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Generic API response wrapper.
+ * Generic API response wrapper with {@code code}, {@code message}, and {@code data}.
+ * <p>
+ * Uses {@code @JsonInclude(NON_NULL)} — null data is omitted from serialized JSON.
+ *
+ * <h3>Usage</h3>
+ * <pre>{@code
+ * // Success
+ * Result.success(user);                         // code=200, message="success"
+ * Result.success(201, "Created", newUser);
+ *
+ * // Error
+ * Result.error(400, "Bad request");             // code=400
+ * Result.error(401, "Unauthorized");
+ * Result.error(500, "Internal error");
+ *
+ * // Conditional (auto-judge null)
+ * Result.of(data);  // data != null → success; data == null → 404 error
+ * }</pre>
+ *
+ * <h3>Standard codes</h3>
+ * <table>
+ *   <tr><td>200</td><td>Success</td></tr>
+ *   <tr><td>400</td><td>Bad request / validation error</td></tr>
+ *   <tr><td>401</td><td>Unauthorized</td></tr>
+ *   <tr><td>403</td><td>Forbidden</td></tr>
+ *   <tr><td>404</td><td>Not found</td></tr>
+ *   <tr><td>500</td><td>Internal server error</td></tr>
+ * </table>
  *
  * @param <T> data type
+ * @author ikeu
+ * @since 1.0.0
  */
 @Data
 @Builder

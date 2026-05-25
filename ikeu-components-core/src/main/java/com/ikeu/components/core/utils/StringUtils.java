@@ -6,6 +6,38 @@ import java.util.regex.Pattern;
 
 /**
  * String manipulation utilities.
+ *
+ * <h3>Usage</h3>
+ * <pre>{@code
+ * // Case conversion
+ * StringUtils.camelToUnderline("userName");     // "user_name"
+ * StringUtils.underlineToCamel("user_name");    // "userName"
+ *
+ * // UUID without dashes
+ * StringUtils.uuid();  // "a1b2c3d4e5f6789012345678901234ab"
+ *
+ * // Random strings
+ * StringUtils.randomNumeric(6);        // "384729"
+ * StringUtils.randomAlphanumeric(16);  // "aB3xK9mP2qR7vY1w"
+ *
+ * // Validation
+ * StringUtils.isMobile("13800138000");  // true (China mobile)
+ * StringUtils.isEmail("a@b.com");       // true
+ * StringUtils.isIdCard("110101199003071234");  // format check only, no checksum
+ * }</pre>
+ *
+ * <h3>Caveats</h3>
+ * <ul>
+ *   <li>{@code camelToUnderline}: consecutive uppercase letters each get an underscore
+ *       (e.g. "XMLParser" → "x_m_l_parser"). Use only for single-word camelCase
+ *       like "userName" or "orderId".</li>
+ *   <li>{@code isIdCard}: format check only (18 digits/X). Does NOT validate the
+ *       checksum digit or date-of-birth portion. Use a dedicated ID card library
+ *       for full validation.</li>
+ * </ul>
+ *
+ * @author ikeu
+ * @since 1.0.0
  */
 public final class StringUtils {
 

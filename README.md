@@ -116,26 +116,47 @@ Response format:
 
 ```yaml
 ikeu:
+  # ── Jackson JSON Configuration ──
+  jackson:
+    date-pattern: "yyyy-MM-dd HH:mm:ss"  # Default date format
+    long-as-string: true                 # Serialize Long as String (JS precision)
+    serialization-inclusion: non_null    # non_null | non_default | non_absent | non_empty | always
+    time-zone: Asia/Shanghai             # Timezone for date formatting
+
+  # ── HTTP Client Configuration ──
+  http-client:
+    connect-timeout: 10s                 # Connection timeout
+    request-timeout: 30s                 # Per-request timeout
+    download-timeout: 5m                 # Download timeout
+    # proxy-host: 127.0.0.1              # Proxy (both host and port required)
+    # proxy-port: 8888
+
   # ── JWT Authentication ──
   jwt:
     enabled: false                  # Enable JWT auto-configuration (REQUIRED, default: false)
+    mode: single                    # Token mode: single (one token) or dual (access + refresh)
     secret: "change-me-32chars..."  # HMAC-SHA256 signing key (≥ 32 characters recommended)
     expiration: 24h                 # Token expiration (supports ms/s/m/h/d suffixes)
     algorithm: HS256                # Signing algorithm: HS256 or RS256
-    # public-key: |                 # Only for RS256
-    #   -----BEGIN PUBLIC KEY-----
-    #   ...
-    # private-key: |
-    #   -----BEGIN PRIVATE KEY-----
-    #   ...
-    auto-filter: true               # Auto-register JwtAuthenticationFilter
     header-name: Authorization      # HTTP header to extract the token from
     token-prefix: "Bearer "         # Token prefix before the actual token string
+    # ── Access token overrides (inherits from shared defaults) ──
+    # access-secret: "access-secret-32chars-min"
+    # access-expiration: 2h
+    # access-header-name: Authorization
+    # access-token-prefix: "Bearer "
+    # ── Refresh token overrides (only used in DUAL mode) ──
+    # refresh-secret: "refresh-secret-32chars-min"
+    # refresh-expiration: 7d
+    # refresh-header-name: X-Refresh-Token
+    # refresh-token-prefix: "Bearer "
+    auto-filter: true               # Auto-register JwtAuthenticationFilter
     fail-on-invalid: false          # Return 401 on invalid/missing token (false = let app decide)
     exclude-paths:                  # Paths excluded from JWT validation (Ant-style patterns)
       - /public/**
       - /actuator/health
       - /api/v1/auth/login
+      - /api/v1/auth/refresh
 
   # ── Object Storage ──
   oss:
@@ -270,21 +291,49 @@ BeanConverter.register(User.class, UserVO.class, (src, tgt) -> {
 
 ### 5. JWT Authentication
 
-#### 5.1 Token Generation & Parsing
+#### 5.1 Token Modes — SINGLE vs DUAL
+
+| | SINGLE | DUAL |
+|---|--------|------|
+| Tokens | 1 (access) | 2 (access + refresh) |
+| Signing keys | 1 | 2 (independent) |
+| Access TTL | `expiration` (e.g. 24h) | `access-expiration` (e.g. 2h) |
+| Refresh TTL | — | `refresh-expiration` (e.g. 7d) |
+| Headers | `Authorization` | `Authorization` + `X-Refresh-Token` |
+
+```yaml
+# DUAL mode config example
+ikeu:
+  jwt:
+    enabled: true
+    mode: dual
+    access-secret: "access-key-at-least-32-characters-!"
+    access-expiration: 2h
+    refresh-secret: "refresh-key-at-least-32-characters"
+    refresh-expiration: 7d
+```
+
+**Fallback chain**: each token's secret/expiration/header falls back to the shared default when not explicitly set. E.g. `access-secret` → `jwt.secret` → hardcoded default.
+
+#### 5.2 Token Generation & Parsing
 
 ```java
 @Autowired
 private JwtUtils jwtUtils;
 
-// Generate (pass null as duration to use the configured default)
-String token = jwtUtils.generateToken(userId, Map.of("role", "admin"), null);
+// ── SINGLE mode ──
+String token = jwtUtils.generateAccessToken(userId, Map.of("role", "admin"));
+String userId = jwtUtils.getUserIdFromAccessToken(token);
+boolean expired = jwtUtils.isAccessTokenExpired(token);
 
-// Parse
-String userId = jwtUtils.getUserId(token);
-boolean expired = jwtUtils.isExpired(token);
+// ── DUAL mode — token pair ──
+TokenPair pair = jwtUtils.generateTokenPair(userId, Map.of("role", "admin"));
+// pair.getAccessToken()   → short-lived (e.g. 2h)
+// pair.getRefreshToken()  → long-lived (e.g. 7d)
+// pair.getExpiresIn()    → seconds until access token expires
 
-// Refresh — preserves all custom claims, re-issues with new expiration
-String newToken = jwtUtils.refreshToken(token, Duration.ofHours(48));
+// Refresh using a valid refresh token
+TokenPair newPair = jwtUtils.refreshAccessToken(pair.getRefreshToken());
 ```
 
 #### 5.2 JwtAuthenticationFilter (auto-registered)
@@ -417,28 +466,119 @@ ossTemplate.batchDelete(List.of("a.txt", "b.txt"));
 boolean exists = ossTemplate.exist("avatar/001.jpg");
 ```
 
-### 9. JSON Utilities — `JsonUtils`
+### 9. JSON Auto-Configuration — `JacksonCustomAutoConfiguration`
 
-```java
-String json = JsonUtils.toJson(obj);
-User user = JsonUtils.fromJson(json, User.class);
-List<User> users = JsonUtils.fromJsonList(jsonArr, User.class);
+The starter auto-configures Jackson globally via two mechanisms:
+
+1. **`Jackson2ObjectMapperBuilderCustomizer`** — hooks into Spring Boot's ObjectMapper creation pipeline, applying date format, Long→String, null exclusion, Java 8 time support
+2. **`WebMvcConfigurer`** — replaces ObjectMapper in all `MappingJackson2HttpMessageConverter` instances (automated `extendMessageConverters`)
+
+All configurable via `application.yml`:
+
+```yaml
+ikeu:
+  jackson:
+    date-pattern: "yyyy-MM-dd HH:mm:ss"
+    long-as-string: true   # Long → String in JSON (JS precision > 2^53)
+    serialization-inclusion: non_null
+    time-zone: Asia/Shanghai
 ```
 
-Pre-configured: null exclusion, lenient unknown-property handling, JavaTimeModule registered, ISO date format.
+**Compatibility**: if you define your own `ObjectMapper` bean or `Jackson2ObjectMapperBuilderCustomizer`, they combine additively. The configured mapper is synced to `JsonUtils` automatically via `@EventListener(ApplicationReadyEvent)`.
 
-### 10. Date Utilities — `DateUtils`
-
-Pure `java.time` API:
+### 10. JSON Utilities — `JsonUtils`
 
 ```java
-String s = DateUtils.format(LocalDateTime.now(), "yyyy-MM-dd HH:mm:ss");
-LocalDateTime dt = DateUtils.parse("2024-01-01 12:00", "yyyy-MM-dd HH:mm");
-LocalDateTime start = DateUtils.startOfDay(LocalDate.now());
-LocalDateTime end = DateUtils.endOfDay(LocalDate.now());
-LocalDateTime future = DateUtils.addDays(LocalDateTime.now(), 7);
+// Serialize
+String json = JsonUtils.toJson(obj);
+String pretty = JsonUtils.toJsonPretty(obj);    // indented
+byte[] bytes = JsonUtils.toJsonBytes(obj);
+
+// Deserialize
+User user = JsonUtils.fromJson(json, User.class);
+List<User> list = JsonUtils.fromJsonList(jsonArr, User.class);
+Map<String, Object> map = JsonUtils.fromJsonMap(json);
+
+// DTO conversion (JSON round-trip)
+UserVo vo = JsonUtils.convert(entity, UserVo.class);
+
+// Validation
+boolean valid = JsonUtils.isValidJson(input);
+```
+
+Pre-configured: `NON_NULL` inclusion, unknown-property tolerance, Java 8 time with custom formatters, `Long`→`String` for JS safety, date format `yyyy-MM-dd HH:mm:ss`.
+
+### 11. Date Utilities — `DateUtils`
+
+Thread-safe, pure `java.time` API. Say goodbye to `SimpleDateFormat`.
+
+```java
+// Format / parse (default patterns available)
+String s = DateUtils.format(LocalDateTime.now());        // "2026-05-25 15:30:00"
+String d = DateUtils.formatDate(LocalDate.now());        // "2026-05-25"
+LocalDateTime dt = DateUtils.parse("2026-05-25 15:30:00");
+
+// Day / month boundaries
+LocalDateTime start = DateUtils.startOfDay(LocalDate.now());  // 00:00:00
+LocalDateTime end = DateUtils.endOfDay(LocalDate.now());      // 23:59:59
+LocalDateTime monthStart = DateUtils.startOfMonth(dt);
+LocalDateTime monthEnd = DateUtils.endOfMonth(dt);
+
+// Arithmetic (negative = subtract)
+LocalDateTime future = DateUtils.addDays(dt, 7);
+LocalDateTime nextMonth = DateUtils.addMonths(dt, 1);
 long days = DateUtils.daysBetween(start, end);
+long hours = DateUtils.hoursBetween(start, end);
+
+// Overlap / range check
 boolean overlap = DateUtils.isOverlap(aStart, aEnd, bStart, bEnd);
+boolean between = DateUtils.isBetween(target, start, end);
+
+// Epoch conversion (system default timezone)
+long millis = DateUtils.toEpochMilli(dt);
+LocalDateTime dt = DateUtils.fromEpochMilli(1700000000000L);
+
+// Legacy Date conversion
+Date legacy = DateUtils.toDate(dt);
+LocalDateTime modern = DateUtils.toLocalDateTime(new Date());
+
+// Format conversion
+DateUtils.convertFormat("2026-05-25", PATTERN_DATE, PATTERN_DATE_COMPACT); // "20260525"
+```
+
+### 12. HTTP Client — `HttpClientUtil`
+
+Static HTTP client using Java 11+ `java.net.http.HttpClient`. HTTP/2, sync/async, JSON auto-serialization.
+
+```java
+// GET
+String html = HttpClientUtil.doGet("https://api.example.com/users");
+String result = HttpClientUtil.doGet(url, Map.of("page", "1"), null);
+List<UserVo> users = HttpClientUtil.doGet(url, params, headers, UserVo.class);
+
+// POST JSON (body auto-serialized via JsonUtils)
+String resp = HttpClientUtil.doPost(url, new CreateUserReq("John"));
+UserVo user = HttpClientUtil.doPost(url, body, headers, UserVo.class);
+
+// POST form-encoded
+String resp = HttpClientUtil.doPostForm(url, Map.of("user", "john"), headers);
+
+// PUT / DELETE
+HttpClientUtil.doPut(url, updateBody, headers);
+HttpClientUtil.doDelete(url, headers);
+
+// Async
+CompletableFuture<String> f = HttpClientUtil.doGetAsync(url, null, null);
+f.thenAccept(System.out::println);
+
+// Download
+HttpClientUtil.download("https://cdn.example.com/file.pdf", Path.of("/tmp/file.pdf"));
+```
+
+Configurable via `application.yml` (see `ikeu.http-client` above) or programmatically:
+
+```java
+HttpClientUtil.configure(customClient, Duration.ofSeconds(5), null, null);
 ```
 
 ### 11. String Utilities — `StringUtils`

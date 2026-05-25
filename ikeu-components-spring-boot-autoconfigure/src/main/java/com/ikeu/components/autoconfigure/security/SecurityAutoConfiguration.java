@@ -17,9 +17,44 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * Auto-configuration for security: JwtUtils, JwtAuthenticationFilter,
- * UserContextClearFilter, and UserContextInterceptor.
- * Activated when {@code ikeu.jwt.enabled=true}.
+ * Auto-configuration for JWT security: {@link JwtUtils}, {@link JwtAuthenticationFilter},
+ * {@link UserContextClearFilter}, and {@link UserContextInterceptor}.
+ * <p>
+ * Activated when {@code ikeu.jwt.enabled=true}. Supports {@code SINGLE} and
+ * {@code DUAL} token modes via {@link JwtProperties.TokenMode}.
+ *
+ * <h3>Beans created (in order)</h3>
+ * <ol>
+ *   <li>{@code JwtUtils} — dual-key capable token utilities</li>
+ *   <li>{@code UserContextClearFilter} — runs last, guarantees context cleanup</li>
+ *   <li>{@code UserContextInterceptor} — Spring MVC interceptor, blocks unauthenticated requests</li>
+ *   <li>{@code WebMvcConfigurer} — registers the interceptor at order 0</li>
+ *   <li>{@code JwtAuthenticationFilter} — servlet filter, extracts and validates JWT at order -100
+ *       (opt-out via {@code ikeu.jwt.auto-filter=false})</li>
+ * </ol>
+ *
+ * <h3>Dual token config example</h3>
+ * <pre>{@code
+ * ikeu:
+ *   jwt:
+ *     enabled: true
+ *     mode: dual
+ *     access-secret: "my-access-secret-32chars-min-xxxx"
+ *     access-expiration: 2h
+ *     refresh-secret: "my-refresh-secret-32chars-min-xxxx"
+ *     refresh-expiration: 7d
+ *     exclude-paths:
+ *       - /api/v1/auth/login
+ *       - /api/v1/auth/refresh
+ * }</pre>
+ *
+ * <p>
+ * <b>Note:</b> When {@code auto-filter=false}, the JwtAuthenticationFilter is not registered,
+ * but the UserContextInterceptor still runs. Ensure your own authentication mechanism
+ * populates {@code UserContextHolder} before requests reach the interceptor.
+ *
+ * @author ikeu
+ * @since 1.0.0
  */
 @AutoConfiguration
 @EnableConfigurationProperties(JwtProperties.class)
@@ -30,15 +65,25 @@ public class SecurityAutoConfiguration {
     // JWT utilities
     // ──────────────────────────────────────────────
 
+    /**
+     * Create JwtUtils wired with resolved access/refresh secrets and TTLs.
+     * In DUAL mode, separate signing keys are used for access and refresh tokens.
+     */
     @Bean
     @ConditionalOnMissingBean
     public JwtUtils jwtUtils(JwtProperties properties) {
-        return new JwtUtils(properties.getSecret(), properties.getExpiration());
+        boolean isDual = properties.getMode() == JwtProperties.TokenMode.DUAL;
+        return new JwtUtils(
+                properties.resolveAccessSecret(),
+                properties.resolveRefreshSecret(),
+                properties.resolveAccessExpiration(),
+                properties.resolveRefreshExpiration(),
+                isDual);
     }
 
     // ──────────────────────────────────────────────
-    // UserContext cleanup — filter (always)
-    // Runs first/last in chain to wrap all others
+    // UserContext cleanup — always registered,
+    // runs last in the filter chain
     // ──────────────────────────────────────────────
 
     @Bean
@@ -54,9 +99,6 @@ public class SecurityAutoConfiguration {
 
     // ──────────────────────────────────────────────
     // Authentication interceptor (Spring MVC)
-    // preHandle  → verifies UserContextHolder is set, returns 401 if not
-    // afterCompletion → clears UserContextHolder
-    // Registered when Spring MVC is present on the classpath
     // ──────────────────────────────────────────────
 
     @Bean
@@ -82,7 +124,8 @@ public class SecurityAutoConfiguration {
     }
 
     // ──────────────────────────────────────────────
-    // JWT authentication filter (opt-out via ikeu.jwt.auto-filter=false)
+    // JWT authentication filter
+    // Opt-out via ikeu.jwt.auto-filter=false
     // ──────────────────────────────────────────────
 
     @Bean
@@ -91,10 +134,15 @@ public class SecurityAutoConfiguration {
             matchIfMissing = true)
     public FilterRegistrationBean<Filter> jwtFilterRegistration(JwtUtils jwtUtils,
                                                                  JwtProperties properties) {
+        boolean isDual = properties.getMode() == JwtProperties.TokenMode.DUAL;
+
         JwtAuthenticationFilter jwtFilter = new JwtAuthenticationFilter(
                 jwtUtils,
-                properties.getHeaderName(),
-                properties.getTokenPrefix(),
+                properties.resolveAccessHeaderName(),
+                properties.resolveAccessTokenPrefix(),
+                properties.resolveRefreshHeaderName(),
+                properties.resolveRefreshTokenPrefix(),
+                isDual,
                 properties.getExcludePaths(),
                 properties.isFailOnInvalid());
 

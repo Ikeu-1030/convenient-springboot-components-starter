@@ -5,7 +5,22 @@ import com.ikeu.components.web.exception.BusinessException;
 import java.util.Collection;
 
 /**
- * Assertion utilities that throw BusinessException on failure.
+ * Assertion utilities — throw {@link BusinessException} on failure.
+ * <p>
+ * Use for parameter validation and business rule enforcement in service layers.
+ * All methods use the single-argument constructor ({@code code = 500}).
+ *
+ * <h3>Usage</h3>
+ * <pre>{@code
+ * AssertUtils.notNull(userId, "User ID must not be null");
+ * AssertUtils.isTrue(amount > 0, "Amount must be positive");
+ * AssertUtils.notEmpty(list, "List must not be empty");
+ * AssertUtils.notBlank(name, "Name must not be blank");
+ * AssertUtils.isFalse(deleted, "Record already deleted");
+ * }</pre>
+ *
+ * @author ikeu
+ * @since 1.0.0
  */
 public final class AssertUtils {
 

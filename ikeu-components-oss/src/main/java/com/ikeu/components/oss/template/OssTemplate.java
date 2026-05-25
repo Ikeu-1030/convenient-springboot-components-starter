@@ -6,7 +6,25 @@ import java.util.List;
 
 /**
  * Abstract OSS template defining standard object storage operations.
- * Implementations provide the actual SDK-specific logic.
+ * <p>
+ * Implementations: {@link AliyunOssTemplate} (Alibaba Cloud OSS),
+ * {@link MinioOssTemplate} (MinIO).
+ *
+ * <h3>Methods</h3>
+ * <ul>
+ *   <li>Overloads with explicit {@code bucket} param override the default bucket</li>
+ *   <li>Overloads without {@code bucket} use the configured default</li>
+ *   <li>{@code getUrl} produces a pre-signed URL with configurable expiration</li>
+ *   <li>{@code getPublicUrl} returns a CDN or direct access URL</li>
+ * </ul>
+ *
+ * <h3>Caveat</h3>
+ * The {@code InputStream} passed to {@code upload()} is NOT closed by the
+ * implementation. The caller is responsible for closing the stream after the
+ * upload completes.
+ *
+ * @author ikeu
+ * @since 1.0.0
  */
 public interface OssTemplate {
 

@@ -12,6 +12,8 @@ import java.util.List;
 
 /**
  * MinIO implementation of {@link OssTemplate}.
+ * @author ikeu
+ * @since 1.0.0
  */
 @Slf4j
 public class MinioOssTemplate implements OssTemplate {
@@ -126,10 +128,19 @@ public class MinioOssTemplate implements OssTemplate {
             for (String name : objectNames) {
                 objects.add(new DeleteObject(name));
             }
-            minioClient.removeObjects(RemoveObjectsArgs.builder()
-                    .bucket(bucket)
-                    .objects(objects)
-                    .build());
+            Iterable<io.minio.Result<io.minio.messages.DeleteError>> results =
+                    minioClient.removeObjects(RemoveObjectsArgs.builder()
+                            .bucket(bucket)
+                            .objects(objects)
+                            .build());
+            for (io.minio.Result<io.minio.messages.DeleteError> result : results) {
+                try {
+                    io.minio.messages.DeleteError error = result.get();
+                    log.warn("MinIO delete error: {} - {}", error.objectName(), error.message());
+                } catch (Exception ignored) {
+                    // result.get() throws if the individual result is an error
+                }
+            }
         } catch (Exception e) {
             log.error("MinIO batch delete failed", e);
             throw new RuntimeException("MinIO batch delete failed", e);
@@ -157,5 +168,14 @@ public class MinioOssTemplate implements OssTemplate {
     @Override
     public boolean exist(String objectName) {
         return exist(defaultBucket, objectName);
+    }
+
+    /**
+     * Cleanup hook called at bean destruction.
+     * The MinIO client's underlying OkHttp connection pool is managed by the JVM;
+     * this is a no-op placeholder for future resource management.
+     */
+    public void shutdown() {
+        log.debug("MinioOssTemplate shutdown (no active resources to release)");
     }
 }

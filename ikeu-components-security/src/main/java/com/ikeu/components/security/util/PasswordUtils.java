@@ -12,6 +12,28 @@ import java.util.Base64;
 
 /**
  * Password encryption utilities: BCrypt hashing and AES symmetric encryption.
+ *
+ * <h3>BCrypt</h3>
+ * Uses {@code BCryptPasswordEncoder} (strength 10). The salt is embedded in the hash —
+ * each call to {@code encode()} produces a different hash for the same input.
+ * <pre>{@code
+ * String hash = PasswordUtils.encode("myPassword");
+ * boolean match = PasswordUtils.matches("myPassword", hash);  // true
+ * }</pre>
+ *
+ * <h3>AES (CBC mode, PKCS5 padding)</h3>
+ * For encrypting sensitive data like phone numbers or ID cards. A random IV
+ * (16 bytes) is prepended to the ciphertext, then the whole is Base64-encoded.
+ * <pre>{@code
+ * String cipher = PasswordUtils.aesEncrypt("13800138000", "my16byteAESKey!!");
+ * String plain = PasswordUtils.aesDecrypt(cipher, "my16byteAESKey!!");
+ * }</pre>
+ * <p>
+ * <b>Key length:</b> keys shorter than 16 bytes are right-padded with '0';
+ * keys longer than 16 bytes are truncated. Provide exactly 16 bytes for best results.
+ *
+ * @author ikeu
+ * @since 1.0.0
  */
 @Slf4j
 public final class PasswordUtils {

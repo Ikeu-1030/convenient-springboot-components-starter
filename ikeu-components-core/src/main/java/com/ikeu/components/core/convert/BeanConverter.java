@@ -11,8 +11,41 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 /**
- * Generic bean converter supporting Entity/DTO/VO conversion, custom mappings,
- * list/page conversion, and multi-source object merging.
+ * Generic bean converter for Entity/DTO/VO conversion.
+ * <p>
+ * Supports custom converter registration, list/page conversion, and multi-source
+ * object merging. Uses {@link BeanCopyUtils} internally for property copying.
+ *
+ * <h3>Usage</h3>
+ * <pre>{@code
+ * // Simple conversion
+ * UserVo vo = BeanConverter.convert(entity, UserVo.class);
+ * List<UserVo> vos = BeanConverter.convertList(entities, UserVo.class);
+ *
+ * // MyBatis-Plus Page conversion (via reflection)
+ * IPage<UserVo> voPage = BeanConverter.convertPage(entityPage, UserVo.class);
+ *
+ * // Register custom converter
+ * BeanConverter.register(User.class, UserVo.class, (src, tgt) -> {
+ *     tgt.setFullName(src.getFirstName() + " " + src.getLastName());
+ *     return tgt;
+ * });
+ *
+ * // Multi-source merge
+ * UserDetailVo detail = BeanConverter.combine(UserDetailVo.class,
+ *         userEntity, userProfileEntity, userExtEntity);
+ * }</pre>
+ *
+ * <h3>Caveats</h3>
+ * <ul>
+ *   <li>MyBatis-Plus {@code Page} conversion uses reflection and silently returns
+ *       empty defaults if the class structure changes</li>
+ *   <li>Custom converters registered via {@code register()} are stored in a static
+ *       map — registration should happen at startup before any conversion calls</li>
+ * </ul>
+ *
+ * @author ikeu
+ * @since 1.0.0
  */
 @Slf4j
 public final class BeanConverter {

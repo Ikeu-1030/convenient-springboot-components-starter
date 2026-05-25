@@ -1,0 +1,101 @@
+# =============================================================================
+# ikeu-components example configuration
+# Copy relevant sections to your application.yml and customize as needed.
+# =============================================================================
+
+ikeu:
+
+  # ---- Jackson JSON Configuration ----
+  jackson:
+    # Default date format pattern (default: yyyy-MM-dd HH:mm:ss)
+    date-pattern: "yyyy-MM-dd HH:mm:ss"
+    # Serialize Long/long as String to prevent JS precision loss (default: true)
+    long-as-string: true
+    # Serialization inclusion: non_null, non_default, non_absent, non_empty, always
+    serialization-inclusion: non_null
+    # Timezone for date formatting (default: system default)
+    time-zone: Asia/Shanghai
+
+  # ---- HTTP Client Configuration ----
+  http-client:
+    # Connection timeout (default: 10s)
+    connect-timeout: 10s
+    # Per-request timeout (default: 30s)
+    request-timeout: 30s
+    # Download timeout (default: 5m)
+    download-timeout: 5m
+    # Proxy settings (optional, both host and port must be set)
+    # proxy-host: 127.0.0.1
+    # proxy-port: 8888
+
+  # ===========================================================================
+  # ---- JWT Configuration ----
+  # Supports two modes: SINGLE (one token) and DUAL (access + refresh).
+  # ===========================================================================
+  jwt:
+    # Set to true to enable JWT auto-configuration
+    enabled: false
+
+    # Token mode: single (default) or dual
+    mode: single
+
+    # ─── Shared defaults (used as fallback) ───
+    # HMAC-SHA256 secret key (at least 32 characters recommended)
+    secret: "your-256-bit-secret-key-change-me-32chars"
+    # Default token expiration duration
+    expiration: 24h
+    # Algorithm: HS256 or RS256
+    algorithm: HS256
+    # Default HTTP header name for token extraction
+    header-name: "Authorization"
+    # Default token prefix
+    token-prefix: "Bearer "
+    # RSA keys (only needed for RS256)
+    # public-key: |
+    #   -----BEGIN PUBLIC KEY-----
+    #   ...
+    #   -----END PUBLIC KEY-----
+    # private-key: |
+    #   -----BEGIN PRIVATE KEY-----
+    #   ...
+    #   -----END PRIVATE KEY-----
+
+    # ─── Access token overrides (inherits from shared defaults when unset) ───
+    # access-secret: "access-token-secret-min-32-chars-xxxx"
+    # access-expiration: 2h
+    # access-header-name: "Authorization"
+    # access-token-prefix: "Bearer "
+
+    # ─── Refresh token overrides (only used in DUAL mode) ───
+    # refresh-secret: "refresh-token-secret-min-32-chars-xxx"
+    # refresh-expiration: 7d
+    # refresh-header-name: "X-Refresh-Token"
+    # refresh-token-prefix: "Bearer "
+
+    # ─── Filter / interceptor settings ───
+    # Auto-register JwtAuthenticationFilter
+    auto-filter: true
+    # Ant-style path patterns excluded from JWT validation
+    exclude-paths:
+      - /public/**
+      - /actuator/health
+      - /api/v1/auth/login
+      - /api/v1/auth/refresh
+    # Return 401 when token is missing/invalid (default: false, delegates to app)
+    fail-on-invalid: false
+
+  # ---- OSS Configuration ----
+#  oss:
+#    # Set to true to enable OSS auto-configuration
+#    enabled: false
+#    # OSS type: aliyun or minio
+#    type: aliyun
+#    # OSS endpoint
+#    endpoint: "https://oss-cn-hangzhou.aliyuncs.com"
+#    # Credentials
+#    access-key: "your-access-key"
+#    secret-key: "your-secret-key"
+#    # Default bucket
+#    bucket: "your-bucket"
+#    # CDN domain (optional, used for getPublicUrl)
+#    cdn-domain: "cdn.example.com"

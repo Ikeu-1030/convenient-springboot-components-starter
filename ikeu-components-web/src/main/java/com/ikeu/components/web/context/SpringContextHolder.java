@@ -7,8 +7,27 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.lang.NonNull;
 
 /**
- * Static holder for Spring ApplicationContext. Provides convenient static methods to
- * retrieve beans and environment properties from non-Spring-managed classes.
+ * Static holder for Spring {@link ApplicationContext}.
+ * <p>
+ * Implements {@link org.springframework.context.ApplicationContextAware} and is
+ * auto-imported by {@code WebAutoConfiguration}. Use from non-Spring-managed code
+ * (e.g., static helpers, utility classes) where DI is unavailable.
+ * <p>
+ * Thread-safe via {@code volatile} field — Spring calls {@code setApplicationContext}
+ * once at startup, all readers see the initialized value.
+ *
+ * <h3>Usage</h3>
+ * <pre>{@code
+ * MyService svc = SpringContextHolder.getBean(MyService.class);
+ * MyService svc = SpringContextHolder.getBean("myService");
+ * String value = SpringContextHolder.getProperty("server.port");
+ * }</pre>
+ *
+ * <h3>Caveat</h3>
+ * Throws {@link IllegalStateException} if called before the Spring context is initialized.
+ *
+ * @author ikeu
+ * @since 1.0.0
  */
 @Slf4j
 public class SpringContextHolder implements ApplicationContextAware {

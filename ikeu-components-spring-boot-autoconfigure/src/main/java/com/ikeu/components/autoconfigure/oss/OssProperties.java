@@ -5,6 +5,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Configuration properties for OSS, prefix "ikeu.oss".
+ * @author ikeu
+ * @since 1.0.0
  */
 @Data
 @ConfigurationProperties(prefix = "ikeu.oss")

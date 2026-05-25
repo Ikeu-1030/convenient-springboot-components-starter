@@ -1,3 +1,5 @@
 com.ikeu.components.autoconfigure.web.WebAutoConfiguration
+com.ikeu.components.autoconfigure.jackson.JacksonCustomAutoConfiguration
+com.ikeu.components.autoconfigure.http.HttpClientAutoConfiguration
 com.ikeu.components.autoconfigure.security.SecurityAutoConfiguration
 com.ikeu.components.autoconfigure.oss.OssAutoConfiguration

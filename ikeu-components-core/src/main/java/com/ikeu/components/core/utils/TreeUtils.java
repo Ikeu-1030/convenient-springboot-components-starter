@@ -9,7 +9,37 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Tree structure utilities for building tree from flat list, extracting leaves, and sorting.
+ * Tree utilities: build tree from flat list, extract leaves, sort.
+ *
+ * <h3>Usage — building a tree</h3>
+ * <pre>{@code
+ * // Flat department list from DB
+ * List<Dept> flatList = deptMapper.selectAll();
+ *
+ * // Build tree (rootParentId = 0 for top-level)
+ * List<Dept> tree = TreeUtils.buildTree(
+ *         flatList,
+ *         Dept::getId,         // id function
+ *         Dept::getParentId,   // parentId function
+ *         Dept::setChildren,   // children setter
+ *         0L);                 // root parent id value
+ *
+ * // Extract leaf node IDs
+ * List<Long> leafIds = TreeUtils.getLeafIds(rootNode);
+ *
+ * // Sort tree by order field
+ * TreeUtils.sortTree(tree, Comparator.comparing(Dept::getSort), Dept::getChildren);
+ * }</pre>
+ *
+ * <h3>Caveats</h3>
+ * <ul>
+ *   <li>No cycle detection — ensure the input is acyclic (a DAG or tree)</li>
+ *   <li>The {@code childrenFn} parameter is {@code BiConsumer<T, List<? extends T>>}
+ *       to support {@code TreeNode::setChildren} method references</li>
+ * </ul>
+ *
+ * @author ikeu
+ * @since 1.0.0
  */
 public final class TreeUtils {
 
@@ -28,11 +58,10 @@ public final class TreeUtils {
      * @param <ID>          id type
      * @return list of root nodes with children populated
      */
-    @SuppressWarnings("unchecked")
     public static <T, ID> List<T> buildTree(@NonNull List<T> flatList,
                                             @NonNull Function<T, ID> idFn,
                                             @NonNull Function<T, ID> parentIdFn,
-                                            @NonNull BiConsumer<T, List<T>> childrenFn,
+                                            @NonNull BiConsumer<T, List<? extends T>> childrenFn,
                                             ID rootParentId) {
         Map<ID, List<T>> parentMap = flatList.stream()
                 .collect(Collectors.groupingBy(parentIdFn));

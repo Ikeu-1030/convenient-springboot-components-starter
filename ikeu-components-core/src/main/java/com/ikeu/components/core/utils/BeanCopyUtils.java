@@ -10,7 +10,38 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Bean property copy utilities with null-exclusion, depth-limited nested copy, and list copy.
+ * Bean property copy with null-exclusion, depth-limited nested copy, and list copy.
+ * <p>
+ * Uses {@code java.beans.Introspector} for property discovery, with
+ * {@link ConcurrentHashMap} caching for performance. Cycle detection via
+ * {@link IdentityHashMap}.
+ *
+ * <h3>Usage</h3>
+ * <pre>{@code
+ * // Copy non-null properties (merge)
+ * BeanCopyUtils.copyProperties(source, target);          // default depth 3
+ * BeanCopyUtils.copyProperties(source, target, 5);      // explicit depth
+ *
+ * // Deep copy a list
+ * List<UserVo> vos = BeanCopyUtils.copyList(entities, UserVo.class);
+ *
+ * // Merge non-null properties (alias)
+ * BeanCopyUtils.mergeProperties(partial, existing);
+ * }</pre>
+ *
+ * <h3>Caveats</h3>
+ * <ul>
+ *   <li><b>Collection properties:</b> the source collection reference is assigned
+ *       directly (shallow copy). Source and target will share the same Collection
+ *       instance — mutations to one affect the other.</li>
+ *   <li><b>Null exclusion:</b> only non-null source properties are copied — this is
+ *       merge semantics, not a full overwrite.</li>
+ *   <li><b>Nested objects:</b> copied recursively up to the configured depth
+ *       (default 3). Beyond that depth, nested objects are skipped.</li>
+ * </ul>
+ *
+ * @author ikeu
+ * @since 1.0.0
  */
 @Slf4j
 public final class BeanCopyUtils {

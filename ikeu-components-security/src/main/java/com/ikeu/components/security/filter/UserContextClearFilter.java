@@ -14,6 +14,8 @@ import java.io.IOException;
  * Guarantees {@link UserContextHolder#clear()} runs after every request.
  * Registered at lowest precedence so it wraps all other filters,
  * ensuring context cleanup even when exceptions occur upstream.
+ * @author ikeu
+ * @since 1.0.0
  */
 @Slf4j
 public class UserContextClearFilter extends OncePerRequestFilter {

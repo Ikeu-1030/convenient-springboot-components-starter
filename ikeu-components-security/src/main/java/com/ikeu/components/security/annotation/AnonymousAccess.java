@@ -8,6 +8,8 @@ import java.lang.annotation.Target;
 /**
  * Mark a controller method or class as publicly accessible (skip JWT authentication).
  * Checked by {@code UserContextInterceptor#preHandle}.
+ * @author ikeu
+ * @since 1.0.0
  */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)

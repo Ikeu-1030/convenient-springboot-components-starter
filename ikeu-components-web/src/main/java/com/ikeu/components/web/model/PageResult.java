@@ -9,9 +9,28 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Paginated result wrapper. Can be constructed from a MyBatis-Plus Page via reflection.
+ * Paginated result wrapper with {@code total}, {@code current}, {@code pages}, and {@code records}.
+ *
+ * <h3>Usage</h3>
+ * <pre>{@code
+ * // From MyBatis-Plus Page (reflection-based)
+ * IPage<User> page = userService.page(new Page<>(1, 10));
+ * PageResult<UserVo> result = PageResult.of(page, UserVo.class);
+ *
+ * // Manual construction
+ * PageResult<UserVo> result = PageResult.<UserVo>builder()
+ *         .total(100).current(1).pages(10).records(voList).build();
+ * }</pre>
+ *
+ * <h3>Caveat</h3>
+ * <ul>
+ *   <li>{@code of()} uses reflection on MyBatis-Plus {@code Page} fields. If the Page
+ *       class API changes, errors are silently swallowed and empty defaults are returned.</li>
+ * </ul>
  *
  * @param <T> record type
+ * @author ikeu
+ * @since 1.0.0
  */
 @Data
 @Builder

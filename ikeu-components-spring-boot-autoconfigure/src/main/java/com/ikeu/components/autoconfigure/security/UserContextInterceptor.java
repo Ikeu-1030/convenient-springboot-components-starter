@@ -23,6 +23,8 @@ import java.util.List;
  * <p>
  * Skips authentication when the handler is annotated with {@link AnonymousAccess}
  * or the request path matches a configured exclude pattern.
+ * @author ikeu
+ * @since 1.0.0
  */
 @Slf4j
 public class UserContextInterceptor implements HandlerInterceptor {

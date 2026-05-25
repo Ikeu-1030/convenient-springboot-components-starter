@@ -3,16 +3,35 @@ package com.ikeu.components.core.utils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Snowflake ID generator. Thread-safe, blocks on clock drift.
+ * Snowflake distributed ID generator — 64-bit unique, roughly time-sorted IDs.
+ * <p>
+ * Thread-safe via {@code synchronized} on {@code nextId()}. Handles clock drift
+ * by blocking up to 10ms; if the clock is still behind, throws
+ * {@link IllegalStateException}.
  *
  * <pre>
  * Structure (64 bits):
- * 1  bit  - unused sign
- * 41 bits - timestamp (milliseconds since custom epoch)
- * 5  bits - datacenterId
- * 5  bits - workerId
- * 12 bits - sequence number
+ * 1  bit  - unused (sign bit, always 0)
+ * 41 bits - timestamp (ms since 2024-01-01T00:00:00Z)
+ * 5  bits - datacenterId (0–31)
+ * 5  bits - workerId (0–31)
+ * 12 bits - sequence number (0–4095 per ms)
  * </pre>
+ *
+ * <h3>Usage</h3>
+ * <pre>{@code
+ * SnowflakeIdGenerator generator = new SnowflakeIdGenerator(1, 1);
+ * long id = generator.nextId();  // e.g. 174567890123456789
+ * }</pre>
+ *
+ * <h3>Caveats</h3>
+ * <ul>
+ *   <li>datacenterId and workerId must be unique across all nodes in a deployment</li>
+ *   <li>The host's clock must not be set backwards while the generator is running</li>
+ * </ul>
+ *
+ * @author ikeu
+ * @since 1.0.0
  */
 @Slf4j
 public class SnowflakeIdGenerator {

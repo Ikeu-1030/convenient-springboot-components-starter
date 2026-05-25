@@ -6,7 +6,26 @@ import java.util.Map;
 
 /**
  * ThreadLocal-based holder for the current user and associated JWT claims.
- * Must be cleared after each request via {@link #clear()} to prevent memory leaks.
+ * <p>
+ * <b>CRITICAL:</b> Must be cleared after each request via {@link #clear()} to
+ * prevent memory leaks in thread-pooled servlet containers (Tomcat, Undertow).
+ * The {@link com.ikeu.components.security.filter.UserContextClearFilter} and
+ * {@link com.ikeu.components.autoconfigure.security.UserContextInterceptor}
+ * both auto-clear after every request when auto-configuration is active.
+ *
+ * <h3>Usage (in filter/interceptor)</h3>
+ * <pre>{@code
+ * try {
+ *     UserContextHolder.setUserId(userId);
+ *     UserContextHolder.setClaims(claims);
+ *     // ... process request
+ * } finally {
+ *     UserContextHolder.clear();  // ALWAYS clear!
+ * }
+ * }</pre>
+ *
+ * @author ikeu
+ * @since 1.0.0
  */
 public final class UserContextHolder {
 

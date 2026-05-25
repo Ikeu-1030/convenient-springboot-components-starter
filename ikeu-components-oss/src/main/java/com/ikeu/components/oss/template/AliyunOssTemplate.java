@@ -16,6 +16,8 @@ import java.util.List;
 
 /**
  * Alibaba Cloud OSS implementation of {@link OssTemplate}.
+ * @author ikeu
+ * @since 1.0.0
  */
 @Slf4j
 public class AliyunOssTemplate implements OssTemplate {
@@ -115,5 +117,14 @@ public class AliyunOssTemplate implements OssTemplate {
     @Override
     public boolean exist(String objectName) {
         return exist(defaultBucket, objectName);
+    }
+
+    /**
+     * Shut down the underlying OSS client, releasing network connections.
+     * Should be called when the bean is destroyed.
+     */
+    public void shutdown() {
+        ossClient.shutdown();
+        log.info("AliyunOssTemplate OSS client shut down");
     }
 }
