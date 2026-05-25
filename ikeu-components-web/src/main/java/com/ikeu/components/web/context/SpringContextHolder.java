@@ -1,6 +1,5 @@
 package com.ikeu.components.web.context;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -29,7 +28,6 @@ import org.springframework.lang.NonNull;
  * @author ikeu
  * @since 1.0.0
  */
-@Slf4j
 public class SpringContextHolder implements ApplicationContextAware {
 
     private static volatile ApplicationContext context;
@@ -37,7 +35,6 @@ public class SpringContextHolder implements ApplicationContextAware {
     @Override
     public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
         SpringContextHolder.context = applicationContext;
-        log.info("SpringContextHolder initialized");
     }
 
     public static <T> T getBean(Class<T> clazz) {

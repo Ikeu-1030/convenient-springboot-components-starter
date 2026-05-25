@@ -110,7 +110,6 @@ public final class HttpClientUtil {
                                                Duration downloadTimeout) {
         if (customClient != null) {
             client = customClient;
-            log.info("HttpClientUtil HttpClient replaced with custom instance");
         }
         if (connectTimeout != null) {
             HttpClientUtil.connectTimeout = connectTimeout;
@@ -132,7 +131,6 @@ public final class HttpClientUtil {
                 .connectTimeout(connectTimeout)
                 .followRedirects(HttpClient.Redirect.NORMAL)
                 .build();
-        log.info("HttpClientUtil reset to defaults");
     }
 
     // ──────────────────────────────────────────────
@@ -228,13 +226,15 @@ public final class HttpClientUtil {
 
     /** DELETE with custom headers. */
     public static String doDelete(String url, Map<String, String> headers) {
-        HttpRequest request = HttpRequest.newBuilder()
+        String[] headerArray = toHeaderArray(headers);
+        HttpRequest.Builder builder = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .DELETE()
-                .timeout(requestTimeout)
-                .headers(toHeaderArray(headers))
-                .build();
-        return execute(request);
+                .timeout(requestTimeout);
+        if (headerArray.length > 0) {
+            builder.headers(headerArray);
+        }
+        return execute(builder.build());
     }
 
     // ──────────────────────────────────────────────
@@ -258,7 +258,6 @@ public final class HttpClientUtil {
             try (InputStream body = response.body()) {
                 Files.copy(body, targetPath, StandardCopyOption.REPLACE_EXISTING);
             }
-            log.info("Downloaded {} → {}", url, targetPath);
             return targetPath;
         } catch (IOException | InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -312,12 +311,15 @@ public final class HttpClientUtil {
     private static HttpRequest buildGetRequest(String url, Map<String, String> params,
                                                 Map<String, String> headers) {
         String fullUrl = buildUrl(url, params);
-        return HttpRequest.newBuilder()
+        String[] headerArray = toHeaderArray(headers);
+        HttpRequest.Builder builder = HttpRequest.newBuilder()
                 .uri(URI.create(fullUrl))
                 .GET()
-                .timeout(requestTimeout)
-                .headers(toHeaderArray(headers))
-                .build();
+                .timeout(requestTimeout);
+        if (headerArray.length > 0) {
+            builder.headers(headerArray);
+        }
+        return builder.build();
     }
 
     private static HttpRequest buildJsonPostRequest(String url, Object body,
@@ -384,11 +386,13 @@ public final class HttpClientUtil {
         return result;
     }
 
-    /** Convert header Map to alternating key-value String array. */
+    /** Convert header Map to alternating key-value String array. Returns empty array for null/empty. */
     static String[] toHeaderArray(Map<String, String> headers) {
         if (headers == null || headers.isEmpty()) {
             return new String[0];
         }
+        // NOTE: Callers MUST check for empty result before calling .headers()
+        // — JDK HttpClient rejects zero-length header arrays.
         String[] result = new String[headers.size() * 2];
         int i = 0;
         for (Map.Entry<String, String> entry : headers.entrySet()) {

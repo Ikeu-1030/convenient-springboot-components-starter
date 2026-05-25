@@ -6,8 +6,6 @@ import com.aliyun.oss.model.DeleteObjectsRequest;
 import com.aliyun.oss.model.ObjectMetadata;
 import com.aliyun.oss.model.OSSObject;
 import com.aliyun.oss.model.PutObjectRequest;
-import lombok.extern.slf4j.Slf4j;
-
 import java.io.InputStream;
 import java.net.URL;
 import java.time.Duration;
@@ -19,7 +17,6 @@ import java.util.List;
  * @author ikeu
  * @since 1.0.0
  */
-@Slf4j
 public class AliyunOssTemplate implements OssTemplate {
 
     private final OSS ossClient;
@@ -125,6 +122,5 @@ public class AliyunOssTemplate implements OssTemplate {
      */
     public void shutdown() {
         ossClient.shutdown();
-        log.info("AliyunOssTemplate OSS client shut down");
     }
 }

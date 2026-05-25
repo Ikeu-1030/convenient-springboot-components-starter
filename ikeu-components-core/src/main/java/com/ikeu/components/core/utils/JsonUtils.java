@@ -140,7 +140,6 @@ public final class JsonUtils {
     public static synchronized void setObjectMapper(ObjectMapper customMapper) {
         if (customMapper != null) {
             mapper = customMapper;
-            log.info("JsonUtils ObjectMapper replaced with custom instance");
         }
     }
 
@@ -149,7 +148,6 @@ public final class JsonUtils {
      */
     public static synchronized void resetObjectMapper() {
         mapper = createDefaultMapper();
-        log.info("JsonUtils ObjectMapper reset to default");
     }
 
     // ──────────────────────────────────────────────
