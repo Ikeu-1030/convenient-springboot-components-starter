@@ -581,7 +581,7 @@ Configurable via `application.yml` (see `ikeu.http-client` above) or programmati
 HttpClientUtil.configure(customClient, Duration.ofSeconds(5), null, null);
 ```
 
-### 11. String Utilities — `StringUtils`
+### 13. String Utilities — `StringUtils`
 
 ```java
 String s = StringUtils.camelToUnderline("userName");     // → user_name
@@ -593,7 +593,7 @@ boolean v = StringUtils.isMobile("13800138000");
 boolean v = StringUtils.isEmail("test@example.com");
 ```
 
-### 12. Tree Utilities — `TreeUtils`
+### 14. Tree Utilities — `TreeUtils`
 
 Your entity must implement `TreeNode<ID>`:
 
@@ -608,7 +608,7 @@ Set<Long> leafIds = TreeUtils.extractLeafIds(tree);
 TreeUtils.sortTree(tree, Comparator.comparing(MenuTreeNode::getSort));
 ```
 
-### 13. Snowflake ID Generator
+### 15. Snowflake ID Generator
 
 ```java
 // workerId + datacenterId (each 0–31)
@@ -616,7 +616,7 @@ SnowflakeIdGenerator generator = new SnowflakeIdGenerator(1, 1);
 long id = generator.nextId();  // thread-safe, blocks on clock drift
 ```
 
-### 14. Spring Context Holder — `SpringContextHolder`
+### 16. Spring Context Holder — `SpringContextHolder`
 
 ```java
 UserService service = SpringContextHolder.getBean(UserService.class);
