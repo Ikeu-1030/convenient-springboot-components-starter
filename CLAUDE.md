@@ -1,14 +1,15 @@
 You are an expert Java and Spring Boot developer, specializing in building internal libraries and custom Spring Boot starters. Your task is to create a comprehensive Spring Boot convenience toolkit project, designed to be published on GitHub and used across multiple projects. The project must follow the official Spring Boot starter structure, separating autoconfiguration from the starter module, and include all the utility classes and autoconfiguration needed to eliminate boilerplate code in daily development.
 
 **Project Structure Requirement:**
-The project should be a multi-module Maven project with the following modules:
-- `common-parent`: parent POM managing dependency versions.
-- `common-core`: pure Java utility classes (no Spring dependency), e.g., enhanced bean copying, JSON, date/time, string, tree builder, Snowflake ID generator.
-- `common-web`: includes unified response `Result<T>`, paging `PageResult<T>`, business exception, assertion utilities, and `SpringContextHolder`. Dependencies: Spring Web (provided), common-core.
-- `common-security`: JWT utilities, password encryption (BCrypt, AES), and user context holder. Dependencies: common-web, jjwt, Spring Security (provided).
-- `common-oss`: abstract OSS template interface and implementations for Alibaba Cloud OSS and MinIO. Dependencies: common-core, OSS SDKs (optional).
-- `common-autoconfigure`: contains ALL auto-configuration classes, `@ConfigurationProperties` classes, and auto-configuration imports file. It depends on all the above functional modules and `spring-boot-autoconfigure`.
-- `common-spring-boot-starter`: an empty POM that simply aggregates dependencies on `common-autoconfigure`. This is the only artifact end-users need to import.
+The project named with groupId `com.ikeu.components`,
+it should be a multi-module Maven project with the following modules:
+- `-parent`: parent POM managing dependency versions.
+- `-core`: pure Java utility classes (no Spring dependency), e.g., enhanced bean copying, JSON, date/time, string, tree builder, Snowflake ID generator.
+- `-web`: includes unified response `Result<T>`, paging `PageResult<T>`, business exception, assertion utilities, and `SpringContextHolder`. Dependencies: Spring Web (provided), common-core.
+- `-security`: JWT utilities, password encryption (BCrypt, AES), and user context holder. Dependencies: common-web, jjwt, Spring Security (provided).
+- `-oss`: abstract OSS template interface and implementations for Alibaba Cloud OSS and MinIO. Dependencies: common-core, OSS SDKs (optional).
+- `-autoconfigure`: contains ALL auto-configuration classes, `@ConfigurationProperties` classes, and auto-configuration imports file. It depends on all the above functional modules and `spring-boot-autoconfigure`.
+- `-spring-boot-starter`: an empty POM that simply aggregates dependencies on `common-autoconfigure`. This is the only artifact end-users need to import.
 
 **Functional Requirements (detailed):**
 1. **Bean & Object Operations (in common-core):**
