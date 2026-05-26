@@ -99,3 +99,80 @@ ikeu:
 #    bucket: "your-bucket"
 #    # CDN domain (optional, used for getPublicUrl)
 #    cdn-domain: "cdn.example.com"
+
+  # ---- Trace ID Configuration ----
+#  trace:
+#    # Enable request trace ID (default: true)
+#    enabled: true
+#    # HTTP header name for trace ID
+#    header-name: X-Trace-Id
+#    # Echo trace ID in response header
+#    response-header: true
+#    # MDC key for logging (use %X{traceId} in log pattern)
+#    mdc-key: traceId
+
+  # ---- CORS Configuration ----
+#  cors:
+#    # Enable CORS auto-configuration (default: false)
+#    enabled: false
+#    # URL pattern for CORS
+#    path-pattern: /**
+#    # Allowed origins
+#    allowed-origins: ["*"]
+#    # Allowed HTTP methods
+#    allowed-methods: [GET, POST, PUT, DELETE, OPTIONS, PATCH]
+#    # Allowed request headers
+#    allowed-headers: ["*"]
+#    # Headers exposed to the browser
+#    exposed-headers: []
+#    # Allow credentials (cookies, auth headers)
+#    allow-credentials: false
+#    # Preflight cache duration
+#    max-age: 1800s
+
+  # ---- XSS Protection ----
+#  xss:
+#    # Enable XSS protection (default: false)
+#    enabled: false
+#    # XSS mode: escape (HTML-encode) or strip (remove tags)
+#    mode: escape
+#    # Paths to exclude from XSS filtering
+#    exclude-paths:
+#      - /api/v1/richtext/**
+
+  # ---- MyBatis-Plus Configuration ----
+#  mybatis-plus:
+#    # Enable MyBatis-Plus auto-configuration (default: false)
+#    enabled: false
+#    # Database type for pagination
+#    db-type: mysql
+#    # Fields auto-filled with current time on insert
+#    auto-fill-create-fields: [createTime, createdAt, gmtCreate]
+#    # Fields auto-filled with current time on update
+#    auto-fill-update-fields: [updateTime, updatedAt, gmtUpdate]
+#    # Fields auto-filled with current user ID on insert
+#    auto-fill-creator-fields: [creator, createBy]
+#    # Fields auto-filled with current user ID on update
+#    auto-fill-updater-fields: [updater, updateBy]
+
+  # ---- Redis Configuration ----
+#  redis:
+#    # Enable Redis auto-configuration (default: false)
+#    enabled: false
+#    # Key prefix for distributed locks
+#    lock-prefix: "ikeu:lock:"
+#    # Use JSON serialization for RedisTemplate values
+#    use-json-serialization: true
+
+  # ---- Spring Security Protection ----
+#  security-protection:
+#    # Enable Spring Security protection (default: false)
+#    enabled: false
+#    # Disable CSRF (recommended for JWT-based APIs)
+#    csrf-disabled: true
+#    # Stateless session management
+#    stateless-session: true
+#    # Apply security headers (XSS-protection, frame-options, HSTS, etc.)
+#    security-headers: true
+#    # URL patterns that always permit access
+#    permit-all-patterns: [/public/**, /actuator/health]

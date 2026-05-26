@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.ikeu.components</groupId>
         <artifactId>ikeu-components-parent</artifactId>
-        <version>1.0.0</version>
+        <version>1.1.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -31,6 +31,10 @@
         <dependency>
             <groupId>com.ikeu.components</groupId>
             <artifactId>ikeu-components-oss</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.ikeu.components</groupId>
+            <artifactId>ikeu-components-redis</artifactId>
         </dependency>
 
         <dependency>
@@ -78,6 +82,27 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- MyBatis-Plus: optional, user must include the starter -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Redis: optional, user must include spring-boot-starter-data-redis -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Spring Security: optional, user must include spring-boot-starter-security -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+            <optional>true</optional>
+        </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -89,5 +114,6 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 </project>

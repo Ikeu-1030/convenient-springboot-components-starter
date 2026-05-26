@@ -13,7 +13,7 @@
 
     <groupId>com.ikeu.components</groupId>
     <artifactId>ikeu-components-parent</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <packaging>pom</packaging>
     <name>ikeu-components-parent</name>
     <description>Spring Boot convenience toolkit parent POM</description>
@@ -28,6 +28,7 @@
         <jjwt.version>0.12.6</jjwt.version>
         <aliyun-oss.version>3.17.4</aliyun-oss.version>
         <minio.version>8.5.9</minio.version>
+        <mybatis-plus.version>3.5.5</mybatis-plus.version>
     </properties>
 
     <modules>
@@ -35,6 +36,7 @@
         <module>ikeu-components-web</module>
         <module>ikeu-components-security</module>
         <module>ikeu-components-oss</module>
+        <module>ikeu-components-redis</module>
         <module>ikeu-components-spring-boot-autoconfigure</module>
         <module>ikeu-components-spring-boot-starter</module>
     </modules>
@@ -64,8 +66,20 @@
             </dependency>
             <dependency>
                 <groupId>com.ikeu.components</groupId>
+                <artifactId>ikeu-components-redis</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ikeu.components</groupId>
                 <artifactId>ikeu-components-spring-boot-autoconfigure</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+
+            <!-- MyBatis-Plus -->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+                <version>${mybatis-plus.version}</version>
             </dependency>
 
             <!-- JWT -->

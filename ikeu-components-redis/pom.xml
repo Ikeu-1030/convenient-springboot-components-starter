@@ -11,9 +11,9 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>ikeu-components-oss</artifactId>
-    <name>ikeu-components-oss</name>
-    <description>Abstract OSS template with Alibaba Cloud OSS and MinIO implementations</description>
+    <artifactId>ikeu-components-redis</artifactId>
+    <name>ikeu-components-redis</name>
+    <description>Redis utilities: distributed lock and JSON serialization</description>
 
     <dependencies>
         <dependency>
@@ -22,15 +22,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.aliyun.oss</groupId>
-            <artifactId>aliyun-sdk-oss</artifactId>
-            <optional>true</optional>
-        </dependency>
-
-        <dependency>
-            <groupId>io.minio</groupId>
-            <artifactId>minio</artifactId>
-            <optional>true</optional>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-redis</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -39,6 +33,10 @@
             <optional>true</optional>
         </dependency>
 
-
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>

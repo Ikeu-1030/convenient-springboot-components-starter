@@ -1,5 +1,11 @@
 com.ikeu.components.autoconfigure.web.WebAutoConfiguration
 com.ikeu.components.autoconfigure.jackson.JacksonCustomAutoConfiguration
 com.ikeu.components.autoconfigure.http.HttpClientAutoConfiguration
+com.ikeu.components.autoconfigure.trace.TraceAutoConfiguration
+com.ikeu.components.autoconfigure.cors.CorsAutoConfiguration
+com.ikeu.components.autoconfigure.xss.XssAutoConfiguration
 com.ikeu.components.autoconfigure.security.SecurityAutoConfiguration
+com.ikeu.components.autoconfigure.protection.SecurityProtectionAutoConfiguration
 com.ikeu.components.autoconfigure.oss.OssAutoConfiguration
+com.ikeu.components.autoconfigure.mybatis.MybatisPlusAutoConfiguration
+com.ikeu.components.autoconfigure.redis.RedisAutoConfiguration

@@ -8,7 +8,9 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
+import com.ikeu.components.core.sensitive.SensitiveSerializer;
 import com.ikeu.components.core.utils.JsonUtils;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -98,7 +100,9 @@ public class JacksonCustomAutoConfiguration {
 
             // Java 8 time
             JavaTimeModule javaTimeModule = buildJavaTimeModule(props.getDatePattern());
-            builder.modules(javaTimeModule);
+            SimpleModule sensitiveModule = new SimpleModule("SensitiveDataMasking");
+            sensitiveModule.addSerializer(String.class, new SensitiveSerializer());
+            builder.modules(javaTimeModule, sensitiveModule);
 
             // Long → String
             if (props.isLongAsString()) {
