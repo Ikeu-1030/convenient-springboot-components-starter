@@ -15,10 +15,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 /**
@@ -28,6 +31,8 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
  * <ul>
  *   <li>{@code RedisTemplate<String, Object>} with JSON serialization
  *       (replacing the default JDK serialization)</li>
+ *   <li>{@link RedisCacheManager} for Spring Cache abstraction
+ *       ({@code @Cacheable}, {@code @CacheEvict}, {@code @CachePut})</li>
  *   <li>{@link RedisDistributedLock} for manual lock/unlock</li>
  *   <li>{@link RedisUtils} for convenient get/set/list/map/hash/atomic operations</li>
  *   <li>{@link RedisLockHelper} for functional auto-lock, cache-penetration
@@ -36,6 +41,9 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
  * <p>
  * Disabled by default. Enable with {@code ikeu.redis.enabled=true} and
  * add {@code spring-boot-starter-data-redis} to your project.
+ * <p>
+ * To use the Spring Cache abstraction, add {@code @EnableCaching} to
+ * your application configuration class.
  *
  * <h3>Configuration</h3>
  * <pre>{@code
@@ -44,6 +52,9 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
  *     enabled: true
  *     lock-prefix: "ikeu:lock:"
  *     use-json-serialization: true
+ *     cache-default-ttl: 30m
+ *     cache-null-ttl: 5m
+ *     cache-key-prefix: "ikeu:cache:"
  * }</pre>
  */
 @AutoConfiguration
@@ -110,5 +121,39 @@ public class RedisAutoConfiguration {
     public RedisLockHelper redisLockHelper(RedisDistributedLock redisDistributedLock,
                                             RedisUtils redisUtils) {
         return new RedisLockHelper(redisDistributedLock, redisUtils);
+    }
+
+    /**
+     * {@link RedisCacheManager} configured with JSON serialization and
+     * configurable TTL for use with Spring Cache annotations
+     * ({@code @Cacheable}, {@code @CacheEvict}, {@code @CachePut}).
+     * <p>
+     * Uses the same serializer as {@code ikeuRedisTemplate} so cached
+     * values are stored as JSON. Null-value caching is enabled by default
+     * to prevent cache penetration.
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    @ConditionalOnBean(name = "ikeuRedisTemplate")
+    public RedisCacheManager redisCacheManager(RedisTemplate<String, Object> ikeuRedisTemplate,
+                                               RedisProperties props) {
+        RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
+                .entryTtl(props.getCacheDefaultTtl())
+                .serializeKeysWith(RedisSerializationContext.SerializationPair
+                        .fromSerializer(new StringRedisSerializer()))
+                .serializeValuesWith(RedisSerializationContext.SerializationPair
+                        .fromSerializer(ikeuRedisTemplate.getValueSerializer()));
+
+        if (!props.isCacheCacheNullValues()) {
+            config = config.disableCachingNullValues();
+        }
+
+        if (props.isCacheUseKeyPrefix()) {
+            config = config.prefixCacheNameWith(props.getCacheKeyPrefix());
+        }
+
+        return RedisCacheManager.builder(ikeuRedisTemplate.getRequiredConnectionFactory())
+                .cacheDefaults(config)
+                .build();
     }
 }

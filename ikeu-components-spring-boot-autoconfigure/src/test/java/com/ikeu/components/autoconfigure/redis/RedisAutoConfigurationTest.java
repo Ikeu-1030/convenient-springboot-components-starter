@@ -18,6 +18,7 @@ class RedisAutoConfigurationTest {
             assertFalse(ctx.containsBean("redisDistributedLock"));
             assertFalse(ctx.containsBean("redisLockHelper"));
             assertFalse(ctx.containsBean("redisUtils"));
+            assertFalse(ctx.containsBean("redisCacheManager"));
         });
     }
 
@@ -26,8 +27,23 @@ class RedisAutoConfigurationTest {
         RedisProperties props = new RedisProperties();
         props.setLockPrefix("custom:lock:");
         props.setUseJsonSerialization(false);
-
         assertEquals("custom:lock:", props.getLockPrefix());
         assertFalse(props.isUseJsonSerialization());
+    }
+
+    @Test
+    void shouldBindCacheProperties() {
+        RedisProperties props = new RedisProperties();
+        props.setCacheDefaultTtl(java.time.Duration.ofMinutes(60));
+        props.setCacheNullTtl(java.time.Duration.ofMinutes(10));
+        props.setCacheKeyPrefix("myapp:cache:");
+        props.setCacheUseKeyPrefix(false);
+        props.setCacheCacheNullValues(false);
+
+        assertEquals(java.time.Duration.ofMinutes(60), props.getCacheDefaultTtl());
+        assertEquals(java.time.Duration.ofMinutes(10), props.getCacheNullTtl());
+        assertEquals("myapp:cache:", props.getCacheKeyPrefix());
+        assertFalse(props.isCacheUseKeyPrefix());
+        assertFalse(props.isCacheCacheNullValues());
     }
 }

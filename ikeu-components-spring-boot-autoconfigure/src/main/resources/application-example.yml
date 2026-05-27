@@ -163,6 +163,18 @@ ikeu:
 #    lock-prefix: "ikeu:lock:"
 #    # Use JSON serialization for RedisTemplate values
 #    use-json-serialization: true
+#
+#    # ─── Spring Cache (RedisCacheManager) ───
+#    # Default TTL for cache entries (default: 30m)
+#    cache-default-ttl: 30m
+#    # TTL for null value entries to reduce cache penetration (default: 5m)
+#    cache-null-ttl: 5m
+#    # Prefix applied to all cache keys (default: "ikeu:cache:")
+#    cache-key-prefix: "ikeu:cache:"
+#    # Whether to add key prefix (default: true)
+#    cache-use-key-prefix: true
+#    # Whether to cache null values to prevent cache penetration (default: true)
+#    cache-cache-null-values: true
 
   # ---- Spring Security Protection ----
 #  security-protection:

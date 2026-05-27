@@ -23,6 +23,12 @@ ikeu:
     enabled: true
     lock-prefix: "ikeu:lock:"     # 锁 key 前缀
     use-json-serialization: true  # RedisTemplate 使用 JSON 序列化
+    # Spring Cache (RedisCacheManager)
+    cache-default-ttl: 30m          # 缓存默认过期时间
+    cache-null-ttl: 5m             # null 值缓存过期时间
+    cache-key-prefix: "ikeu:cache:" # 缓存 key 前缀
+    cache-use-key-prefix: true      # 是否启用 key 前缀
+    cache-cache-null-values: true   # 是否缓存 null 值（防穿透）
 ```
 
 ## RedisUtils — 缓存操作
@@ -156,6 +162,49 @@ User user = lockHelper.getWithBreakdownProtection(
 2. 未命中 → 尝试获取互斥锁 `mutex:<key>`
 3. 获取锁 → 双重检查 → 查 DB → 写缓存 → 释放锁
 4. 未获取锁 → 自旋等待（默认 5s）→ 重新查缓存 → 超时则直接查 DB
+
+## RedisCacheManager — Spring Cache 注解支持
+
+自动配置的 `RedisCacheManager` 支持 `@Cacheable`、`@CacheEvict`、`@CachePut` 注解，
+使用 JSON 序列化，默认 30 分钟过期。
+
+### 启用 Spring Cache
+
+在任意 `@Configuration` 类上添加 `@EnableCaching`：
+
+```java
+@Configuration
+@EnableCaching
+public class CacheConfig {
+}
+```
+
+### 使用示例
+
+```java
+@Service
+public class UserService {
+
+    @Cacheable(value = "user", key = "#id")
+    public User getUser(Long id) {
+        return userMapper.selectById(id);  // 缓存命中后不再执行
+    }
+
+    @CacheEvict(value = "user", key = "#id")
+    public void deleteUser(Long id) {
+        userMapper.deleteById(id);
+    }
+
+    @CachePut(value = "user", key = "#result.id")
+    public User updateUser(User user) {
+        userMapper.updateById(user);
+        return user;
+    }
+}
+```
+
+> **注意：** `RedisCacheManager` 已在 `RedisAutoConfiguration` 中自动注册，
+> 用户无需手动创建。可通过 `ikeu.redis.cache-*` 属性调整 TTL 和前缀。
 
 ## 注意事项
 
