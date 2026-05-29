@@ -16,6 +16,9 @@
 | `ikeu-components-security` | JWT 双模式、密码加密、用户上下文 | [README](ikeu-components-security/README.md) |
 | `ikeu-components-oss` | 对象存储抽象（阿里云/MinIO） | [README](ikeu-components-oss/README.md) |
 | `ikeu-components-redis` | Redis 工具、分布式锁、缓存防护 | [README](ikeu-components-redis/README.md) |
+| `ikeu-components-sms` | 短信服务抽象（阿里云/腾讯云） | [README](ikeu-components-sms/README.md) |
+| `ikeu-components-payment` | 支付接口抽象（微信/支付宝） | [README](ikeu-components-payment/README.md) |
+| `ikeu-components-websocket` | WebSocket/STOMP JWT 认证增强 | [README](ikeu-components-websocket/README.md) |
 | `ikeu-components-spring-boot-autoconfigure` | 全部自动配置 & Properties | [README](ikeu-components-spring-boot-autoconfigure/README.md) |
 | `ikeu-components-spring-boot-starter` | 空 Starter，聚合上述全部 | — |
 
@@ -95,6 +98,9 @@ public class UserController {
 | XSS 防护 | autoconfigure | `ikeu.xss.enabled=true` |
 | Spring Security 安全头/CSRF/Session | autoconfigure | `ikeu.security-protection.enabled=true` |
 | Jackson 全局配置 | autoconfigure | 自动 |
+| SMS 短信服务（阿里云/腾讯云） | sms | `ikeu.sms.enabled=true` |
+| 支付网关（微信/支付宝） | payment | `ikeu.payment.enabled=true` |
+| WebSocket JWT 认证 + STOMP 鉴权 | websocket | `ikeu.websocket.enabled=true` |
 
 ## 配置属性一览
 
@@ -105,6 +111,9 @@ ikeu:
   jwt:               # JWT 认证 — 详见 security README
   oss:               # 对象存储 — 详见 oss README
   redis:             # Redis — 详见 redis README
+  sms:               # 短信服务 — 详见 sms README
+  payment:           # 支付网关 — 详见 payment README
+  websocket:         # WebSocket 认证 — 详见 websocket README
   mybatis-plus:      # MyBatis-Plus 分页/填充
   trace:             # 请求追踪 (默认启用)
   cors:              # 跨域配置
@@ -154,6 +163,11 @@ public class MyConfig {
 | MyBatis-Plus | `com.baomidou:mybatis-plus-spring-boot3-starter` |
 | Redis | `org.springframework.boot:spring-boot-starter-data-redis` |
 | Spring Security | `org.springframework.boot:spring-boot-starter-security` |
+| SMS-阿里云 | `com.aliyun:dysmsapi20170525` |
+| SMS-腾讯云 | `com.tencentcloudapi:tencentcloud-sdk-java-sms` |
+| 支付-微信 | `com.github.wechatpay-apiv3:wechatpay-java` |
+| 支付-支付宝 | `com.alipay.sdk:alipay-easysdk` |
+| WebSocket | `org.springframework.boot:spring-boot-starter-websocket` |
 
 ## 环境要求
 

@@ -16,6 +16,9 @@ A general-purpose toolkit for Spring Boot 3.2+ monolithic/microservice applicati
 | `ikeu-components-security` | JWT dual-mode, password encryption, user context | [README](ikeu-components-security/README.en.md) |
 | `ikeu-components-oss` | Object storage abstraction (Aliyun/MinIO) | [README](ikeu-components-oss/README.en.md) |
 | `ikeu-components-redis` | Redis utils, distributed lock, cache protection | [README](ikeu-components-redis/README.en.md) |
+| `ikeu-components-sms` | SMS abstraction (Aliyun/Tencent) | [README](ikeu-components-sms/README.en.md) |
+| `ikeu-components-payment` | Payment abstraction (WeChat/Alipay) | [README](ikeu-components-payment/README.en.md) |
+| `ikeu-components-websocket` | WebSocket/STOMP JWT auth enhancement | [README](ikeu-components-websocket/README.en.md) |
 | `ikeu-components-spring-boot-autoconfigure` | All auto-configuration & Properties | [README](ikeu-components-spring-boot-autoconfigure/README.en.md) |
 | `ikeu-components-spring-boot-starter` | Empty starter, aggregates all above | — |
 
@@ -95,6 +98,9 @@ Response:
 | XSS protection | autoconfigure | `ikeu.xss.enabled=true` |
 | Spring Security headers/CSRF/Session | autoconfigure | `ikeu.security-protection.enabled=true` |
 | Jackson global config | autoconfigure | auto |
+| SMS (Aliyun/Tencent) | sms | `ikeu.sms.enabled=true` |
+| Payment gateway (WeChat/Alipay) | payment | `ikeu.payment.enabled=true` |
+| WebSocket JWT auth + STOMP authorization | websocket | `ikeu.websocket.enabled=true` |
 
 ## Configuration Properties
 
@@ -105,6 +111,9 @@ ikeu:
   jwt:               # JWT auth — see security README
   oss:               # Object storage — see oss README
   redis:             # Redis — see redis README
+  sms:               # SMS — see sms README
+  payment:           # Payment — see payment README
+  websocket:         # WebSocket auth — see websocket README
   mybatis-plus:      # MyBatis-Plus pagination/fill
   trace:             # Request tracing (enabled by default)
   cors:              # CORS config
@@ -154,6 +163,11 @@ The following require explicit user dependencies to activate (not transitive):
 | MyBatis-Plus | `com.baomidou:mybatis-plus-spring-boot3-starter` |
 | Redis | `org.springframework.boot:spring-boot-starter-data-redis` |
 | Spring Security | `org.springframework.boot:spring-boot-starter-security` |
+| SMS-Aliyun | `com.aliyun:dysmsapi20170525` |
+| SMS-Tencent | `com.tencentcloudapi:tencentcloud-sdk-java-sms` |
+| Payment-WeChat | `com.github.wechatpay-apiv3:wechatpay-java` |
+| Payment-Alipay | `com.alipay.sdk:alipay-easysdk` |
+| WebSocket | `org.springframework.boot:spring-boot-starter-websocket` |
 
 ## Requirements
 

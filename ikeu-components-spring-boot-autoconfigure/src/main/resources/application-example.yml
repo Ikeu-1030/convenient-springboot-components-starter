@@ -176,6 +176,72 @@ ikeu:
 #    # Whether to cache null values to prevent cache penetration (default: true)
 #    cache-cache-null-values: true
 
+  # ---- SMS Configuration ----
+#  sms:
+#    # Enable SMS auto-configuration (default: false)
+#    enabled: false
+#    # SMS provider: aliyun or tencent
+#    type: aliyun
+#    # Default sign name (fallback for provider-specific configs)
+#    default-sign-name: "XX平台"
+#    # ─── Alibaba Cloud SMS ───
+#    aliyun:
+#      access-key-id: "your-access-key-id"
+#      access-key-secret: "your-access-key-secret"
+#      sign-name: "XX平台"           # optional, overrides default-sign-name
+#      region-id: cn-hangzhou
+#      timeout-seconds: 10
+#    # ─── Tencent Cloud SMS ───
+#    tencent:
+#      secret-id: "your-secret-id"
+#      secret-key: "your-secret-key"
+#      sdk-app-id: "1400000000"
+#      sign-name: "XX平台"           # optional, overrides default-sign-name
+#      region: ap-guangzhou
+
+  # ---- Payment Gateway Configuration ----
+#  payment:
+#    # Enable payment auto-configuration (default: false)
+#    enabled: false
+#    # Payment provider: wechat or alipay
+#    type: wechat
+#    # ─── WeChat Pay APIv3 ───
+#    wechat:
+#      merchant-id: "1230000109"
+#      merchant-serial-number: "xxx"
+#      private-key: |
+#        -----BEGIN PRIVATE KEY-----
+#        ...
+#        -----END PRIVATE KEY-----
+#      api-v3-key: "your-api-v3-key"
+#      app-id: "wx1234567890"
+#      notify-url: "https://api.example.com/notify/wechat"
+#    # ─── Alipay ───
+#    alipay:
+#      app-id: "2021000000000001"
+#      private-key: "..."
+#      alipay-public-key: "..."
+#      gateway-url: "openapi.alipay.com"   # optional
+#      notify-url: "https://api.example.com/notify/alipay"
+
+  # ---- WebSocket / STOMP Configuration ----
+#  websocket:
+#    # Enable WebSocket auto-configuration (default: false)
+#    enabled: false
+#    # Enable JWT authentication on handshake and STOMP CONNECT (default: true)
+#    jwt-auth-enabled: true
+#    # Query parameter name for access token (SockJS fallback)
+#    token-param: access_token
+#    # STOMP endpoint paths
+#    endpoint-paths: [/ws]
+#    # Paths excluded from JWT validation during handshake
+#    handshake-whitelist: []
+#    # Allowed origins (must be explicitly configured in production)
+#    allowed-origins:
+#      - "https://example.com"
+#    # Whether to allow SockJS fallback
+#    sock-js-enabled: true
+
   # ---- Spring Security Protection ----
 #  security-protection:
 #    # Enable Spring Security protection (default: false)

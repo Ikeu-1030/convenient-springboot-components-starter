@@ -9,3 +9,6 @@ com.ikeu.components.autoconfigure.protection.SecurityProtectionAutoConfiguration
 com.ikeu.components.autoconfigure.oss.OssAutoConfiguration
 com.ikeu.components.autoconfigure.mybatis.MybatisPlusAutoConfiguration
 com.ikeu.components.autoconfigure.redis.RedisAutoConfiguration
+com.ikeu.components.autoconfigure.sms.SmsAutoConfiguration
+com.ikeu.components.autoconfigure.payment.PaymentAutoConfiguration
+com.ikeu.components.autoconfigure.websocket.WebSocketAutoConfiguration

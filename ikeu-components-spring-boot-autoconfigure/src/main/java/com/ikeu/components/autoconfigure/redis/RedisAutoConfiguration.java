@@ -29,6 +29,8 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
  * <p>
  * Provides:
  * <ul>
+ *   <li>{@link StringRedisTemplate} with String-to-String serialization
+ *       for distributed locks and simple KV operations</li>
  *   <li>{@code RedisTemplate<String, Object>} with JSON serialization
  *       (replacing the default JDK serialization)</li>
  *   <li>{@link RedisCacheManager} for Spring Cache abstraction
@@ -62,6 +64,20 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @ConditionalOnClass({RedisTemplate.class, RedisConnectionFactory.class})
 @ConditionalOnProperty(prefix = "ikeu.redis", name = "enabled", havingValue = "true")
 public class RedisAutoConfiguration {
+
+    /**
+     * {@link StringRedisTemplate} with {@link StringRedisSerializer} for both
+     * key and value, used by {@link RedisDistributedLock} and other string-based
+     * Redis operations.
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    public StringRedisTemplate stringRedisTemplate(RedisConnectionFactory connectionFactory) {
+        StringRedisTemplate template = new StringRedisTemplate();
+        template.setConnectionFactory(connectionFactory);
+        template.afterPropertiesSet();
+        return template;
+    }
 
     /**
      * Custom {@link RedisTemplate} with JSON value serialization instead of JDK.

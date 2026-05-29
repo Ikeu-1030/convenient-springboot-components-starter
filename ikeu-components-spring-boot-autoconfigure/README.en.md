@@ -19,6 +19,9 @@ All auto-configuration classes and `@ConfigurationProperties`. No manual `@Impor
 | `OssAutoConfiguration` | `ikeu.oss.enabled=true` | AliyunOssTemplate or MinioOssTemplate |
 | `MybatisPlusAutoConfiguration` | `ikeu.mybatis-plus.enabled=true` + MP on classpath | Pagination plugin + MetaObjectHandler |
 | `RedisAutoConfiguration` | `ikeu.redis.enabled=true` + Redis on classpath | RedisTemplate(JSON) + RedisUtils + RedisLock + RedisLockHelper |
+| `SmsAutoConfiguration` | `ikeu.sms.enabled=true` | Binds SmsProperties (user provides SmsTemplate bean) |
+| `PaymentAutoConfiguration` | `ikeu.payment.enabled=true` | Binds PaymentProperties (user provides PaymentTemplate bean) |
+| `WebSocketAutoConfiguration` | `ikeu.websocket.enabled=true` + JwtUtils + spring-websocket on classpath | JWT handshake interceptor + STOMP channel interceptor + auth validator |
 
 ## Configuration Property Prefixes
 
@@ -33,6 +36,9 @@ All auto-configuration classes and `@ConfigurationProperties`. No manual `@Impor
 | `ikeu.xss` | `XssProperties` | ❌ false |
 | `ikeu.mybatis-plus` | `MybatisPlusProperties` | ❌ false |
 | `ikeu.redis` | `RedisProperties` | ❌ false |
+| `ikeu.sms` | `SmsProperties` | ❌ false |
+| `ikeu.payment` | `PaymentProperties` | ❌ false |
+| `ikeu.websocket` | `WebSocketProperties` | ❌ false |
 | `ikeu.security-protection` | `SecurityProtectionProperties` | ❌ false |
 
 Full config reference: [application-example.yml](src/main/resources/application-example.yml)
@@ -65,6 +71,11 @@ The following are `optional` — **not transitive**, users add as needed:
 | `org.springframework.boot:spring-boot-starter-security` | Spring Security headers |
 | `com.aliyun.oss:aliyun-sdk-oss` | Alibaba Cloud OSS |
 | `io.minio:minio` | MinIO OSS |
+| `com.aliyun:dysmsapi20170525` | Alibaba Cloud SMS |
+| `com.tencentcloudapi:tencentcloud-sdk-java-sms` | Tencent Cloud SMS |
+| `com.github.wechatpay-apiv3:wechatpay-java` | WeChat Pay |
+| `com.alipay.sdk:alipay-easysdk` | Alipay |
+| `org.springframework:spring-websocket` / `spring-messaging` | WebSocket/STOMP |
 
 ## Overriding Beans
 

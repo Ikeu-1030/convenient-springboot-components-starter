@@ -14,6 +14,7 @@ class RedisAutoConfigurationTest {
     @Test
     void shouldNotRegisterWhenDisabled() {
         runner.run(ctx -> {
+            assertFalse(ctx.containsBean("stringRedisTemplate"));
             assertFalse(ctx.containsBean("ikeuRedisTemplate"));
             assertFalse(ctx.containsBean("redisDistributedLock"));
             assertFalse(ctx.containsBean("redisLockHelper"));

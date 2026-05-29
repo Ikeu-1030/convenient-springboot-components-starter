@@ -97,4 +97,9 @@ public interface OssTemplate {
      * Check if an object exists in the default bucket.
      */
     boolean exist(String objectName);
+
+    /**
+     * Shut down the underlying OSS client, releasing network connections.
+     */
+    void shutdown();
 }

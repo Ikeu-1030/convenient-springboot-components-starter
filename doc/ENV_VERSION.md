@@ -38,6 +38,8 @@
 | GroupId | ArtifactId | Version | Scope |
 |---------|------------|---------|-------|
 | org.springframework | spring-webmvc | 6.1.1 | provided |
+| org.springframework | spring-websocket | 6.1.1 | provided |
+| org.springframework | spring-messaging | 6.1.1 | provided |
 | org.springframework.security | spring-security-core | 6.2.0 | provided |
 | jakarta.servlet | jakarta.servlet-api | 6.0.0 | provided |
 | org.projectlombok | lombok | 1.18.30 | optional |
@@ -52,6 +54,8 @@
 |---------|------------|---------|-------|
 | com.aliyun.oss | aliyun-sdk-oss | 3.17.4 | optional |
 | io.minio | minio | 8.5.9 | optional |
+| org.springframework | spring-websocket | 6.1.1 | optional |
+| org.springframework | spring-messaging | 6.1.1 | optional |
 | org.springframework.boot | spring-boot-configuration-processor | 3.2.0 | optional |
 
 ### OSS 使用说明
@@ -84,6 +88,84 @@ ikeu:
     access-key: minioadmin
     secret-key: minioadmin
     bucket: my-bucket
+```
+
+---
+
+### SMS 使用说明
+
+`ikeu-components-sms` 提供 `SmsTemplate` 接口，SDK 实现需用户自行添加并创建 Bean。
+
+```xml
+<!-- 阿里云短信 -->
+<dependency>
+    <groupId>com.aliyun</groupId>
+    <artifactId>dysmsapi20170525</artifactId>
+</dependency>
+<!-- 腾讯云短信 -->
+<dependency>
+    <groupId>com.tencentcloudapi</groupId>
+    <artifactId>tencentcloud-sdk-java-sms</artifactId>
+</dependency>
+```
+
+```yaml
+ikeu:
+  sms:
+    enabled: true
+    type: aliyun
+    aliyun:
+      access-key-id: "xxx"
+      access-key-secret: "xxx"
+```
+
+### Payment 使用说明
+
+`ikeu-components-payment` 提供 `PaymentTemplate` 接口和 `PaymentCallbackHandler` 模板类，SDK 实现需用户自行添加并创建 Bean。
+
+```xml
+<!-- 微信支付 -->
+<dependency>
+    <groupId>com.github.wechatpay-apiv3</groupId>
+    <artifactId>wechatpay-java</artifactId>
+</dependency>
+<!-- 支付宝 -->
+<dependency>
+    <groupId>com.alipay.sdk</groupId>
+    <artifactId>alipay-easysdk</artifactId>
+</dependency>
+```
+
+```yaml
+ikeu:
+  payment:
+    enabled: true
+    type: wechat
+    wechat:
+      merchant-id: "xxx"
+      api-v3-key: "xxx"
+```
+
+### WebSocket 使用说明
+
+`ikeu-components-websocket` 提供 JWT 握手拦截和 STOMP 通道鉴权，需启用 JWT 并添加 WebSocket starter。
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-websocket</artifactId>
+</dependency>
+```
+
+```yaml
+ikeu:
+  jwt:
+    enabled: true
+    secret: "your-256-bit-secret"
+  websocket:
+    enabled: true
+    allowed-origins:
+      - "https://example.com"
 ```
 
 ---
